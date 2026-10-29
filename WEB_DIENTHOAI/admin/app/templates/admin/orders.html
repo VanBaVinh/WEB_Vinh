@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ title or "Quản Lý Đơn Hàng — VinhBaPhone Admin" }}</title>
+  <meta name="description" content="Danh sách và quản lý trạng thái đơn hàng khách hàng VinhBaPhone." />
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          colors: {
+            darkBg: '#070b14',
+            darkSidebar: '#0b1120',
+            darkCard: '#0f172a',
+            cyanGlow: '#00f0ff',
+            purpleGlow: '#bf00ff',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbars and glowing effects */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b1120; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+    .badge-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .badge-confirmed { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .badge-shipping { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .badge-completed { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-cancelled { background: rgba(244, 63, 94, 0.15); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4); }
+  </style>
+</head>
+<body class="bg-[#070b14] text-slate-100 min-h-screen flex antialiased">
+
+  <!-- ======================================================================
+       SIDEBAR
+       ====================================================================== -->
+  <aside class="w-64 bg-[#0b1120] border-r border-slate-800/80 flex flex-col shrink-0 min-h-screen sticky top-0 h-screen">
+    <!-- Brand Header -->
+    <div class="p-6 border-b border-slate-800/80 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-black text-white shadow-lg shadow-cyan-500/20">
+        VB
+      </div>
+      <div>
+        <div class="font-extrabold text-base tracking-wide bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+          VinhBaPhone
+        </div>
+        <div class="text-[11px] font-semibold text-slate-400 tracking-wider uppercase">
+          Admin Portal
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+      <a
+        href="/admin"
+        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all border border-transparent"
+      >
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        <span>Tổng Quan</span>
+      </a>
+
+      <!-- ACTIVE ORDERS TAB -->
+      <a
+        href="/admin/orders"
+        class="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all border border-cyan-500/40 bg-cyan-500/10 text-cyan-400"
+      >
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+          <span>Quản Lý Đơn Hàng</span>
+        </div>
+        {% if pending_count > 0 %}
+        <span class="px-2 py-0.5 text-xs font-bold bg-amber-500 text-slate-950 rounded-full animate-pulse">
+          {{ pending_count }}
+        </span>
+        {% endif %}
+      </a>
+
+      <a
+        href="/admin#products"
+        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all border border-transparent"
+      >
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+        <span>Quản Lý Sản Phẩm</span>
+      </a>
+
+      <a
+        href="/admin#users"
+        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-all border border-transparent"
+      >
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <span>Quản Lý Người Dùng</span>
+      </a>
+
+      <div class="pt-4 mt-4 border-t border-slate-800/60">
+        <a
+          href="/"
+          target="_blank"
+          class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/40 transition-colors"
+        >
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <span>Xem Cửa Hàng (Store)</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Admin Account Footer -->
+    <div class="p-4 border-t border-slate-800/80 bg-[#080d19]/60 flex items-center justify-between">
+      <div class="flex items-center gap-3 overflow-hidden">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-400 to-purple-500 flex items-center justify-center font-bold text-xs text-slate-950">
+          AD
+        </div>
+        <div class="overflow-hidden">
+          <div class="text-xs font-bold truncate">admin</div>
+          <div class="text-[10px] text-slate-400 truncate">Quản trị viên</div>
+        </div>
+      </div>
+      <a href="/login" class="text-xs text-slate-400 hover:text-rose-400" title="Đăng nhập lại">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       MAIN CONTENT AREA
+       ====================================================================== -->
+  <main class="flex-1 flex flex-col min-h-screen overflow-x-hidden">
+    <!-- Top Header Bar -->
+    <header class="h-16 bg-[#0b1120]/80 backdrop-blur-md border-b border-slate-800/80 px-8 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <span class="text-xl">📦</span>
+        <h1 class="text-lg font-bold text-white tracking-wide">Quản Lý Đơn Đặt Hàng</h1>
+        <span class="text-xs px-2.5 py-1 bg-slate-800 text-slate-300 rounded-full border border-slate-700 font-medium">
+          {{ total_orders }} đơn hàng
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button
+          onclick="window.location.reload()"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          <span>Làm mới</span>
+        </button>
+
+        <a
+          href="/"
+          target="_blank"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition"
+        >
+          <span>🛍️ Mua Hàng Thử</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="p-8 space-y-6 flex-1">
+
+      <!-- Metrics KPI Strip -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <!-- Card 1: All -->
+        <a href="/admin/orders" class="p-4 rounded-2xl bg-[#0f172a] border {% if not current_status %}border-cyan-500 shadow-lg shadow-cyan-500/10{% else %}border-slate-800/80 hover:border-slate-700{% endif %} transition">
+          <div class="text-xs text-slate-400 font-medium">Tất cả đơn</div>
+          <div class="text-2xl font-black text-white mt-1">{{ total_orders }}</div>
+        </a>
+
+        <!-- Card 2: Pending (Vàng) -->
+        <a href="/admin/orders?status=pending" class="p-4 rounded-2xl bg-[#0f172a] border {% if current_status == 'pending' %}border-amber-500 shadow-lg shadow-amber-500/10{% else %}border-slate-800/80 hover:border-slate-700{% endif %} transition">
+          <div class="text-xs text-amber-400 font-medium flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            Chờ xử lý
+          </div>
+          <div class="text-2xl font-black text-amber-400 mt-1">{{ pending_count }}</div>
+        </a>
+
+        <!-- Card 3: Confirmed (Lam) -->
+        <a href="/admin/orders?status=confirmed" class="p-4 rounded-2xl bg-[#0f172a] border {% if current_status == 'confirmed' %}border-blue-500 shadow-lg shadow-blue-500/10{% else %}border-slate-800/80 hover:border-slate-700{% endif %} transition">
+          <div class="text-xs text-blue-400 font-medium">Đã xác nhận</div>
+          <div class="text-2xl font-black text-blue-400 mt-1">{{ confirmed_count }}</div>
+        </a>
+
+        <!-- Card 4: Shipping (Tím) -->
+        <a href="/admin/orders?status=shipping" class="p-4 rounded-2xl bg-[#0f172a] border {% if current_status == 'shipping' %}border-purple-500 shadow-lg shadow-purple-500/10{% else %}border-slate-800/80 hover:border-slate-700{% endif %} transition">
+          <div class="text-xs text-purple-400 font-medium">Đang giao</div>
+          <div class="text-2xl font-black text-purple-400 mt-1">{{ shipping_count }}</div>
+        </a>
+
+        <!-- Card 5: Completed (Xanh) -->
+        <a href="/admin/orders?status=completed" class="p-4 rounded-2xl bg-[#0f172a] border {% if current_status == 'completed' %}border-emerald-500 shadow-lg shadow-emerald-500/10{% else %}border-slate-800/80 hover:border-slate-700{% endif %} transition">
+          <div class="text-xs text-emerald-400 font-medium">Hoàn tất</div>
+          <div class="text-2xl font-black text-emerald-400 mt-1">{{ completed_count }}</div>
+        </a>
+
+        <!-- Card 6: Cancelled (Đỏ) -->
+        <a href="/admin/orders?status=cancelled" class="p-4 rounded-2xl bg-[#0f172a] border {% if current_status == 'cancelled' %}border-rose-500 shadow-lg shadow-rose-500/10{% else %}border-slate-800/80 hover:border-slate-700{% endif %} transition">
+          <div class="text-xs text-rose-400 font-medium">Đã hủy</div>
+          <div class="text-2xl font-black text-rose-400 mt-1">{{ cancelled_count }}</div>
+        </a>
+      </div>
+
+      <!-- Filters & Search Toolbar -->
+      <div class="p-4 rounded-2xl bg-[#0f172a] border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Status Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+          <a
+            href="/admin/orders{% if current_search %}?search={{ current_search }}{% endif %}"
+            class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition {% if not current_status %}bg-slate-700 text-white font-bold{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800{% endif %}"
+          >
+            Tất cả
+          </a>
+          <a
+            href="/admin/orders?status=pending{% if current_search %}&search={{ current_search }}{% endif %}"
+            class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition {% if current_status == 'pending' %}bg-amber-500/20 text-amber-300 border border-amber-500/50{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800{% endif %}"
+          >
+            Chờ xử lý ({{ pending_count }})
+          </a>
+          <a
+            href="/admin/orders?status=confirmed{% if current_search %}&search={{ current_search }}{% endif %}"
+            class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition {% if current_status == 'confirmed' %}bg-blue-500/20 text-blue-300 border border-blue-500/50{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800{% endif %}"
+          >
+            Đã xác nhận
+          </a>
+          <a
+            href="/admin/orders?status=shipping{% if current_search %}&search={{ current_search }}{% endif %}"
+            class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition {% if current_status == 'shipping' %}bg-purple-500/20 text-purple-300 border border-purple-500/50{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800{% endif %}"
+          >
+            Đang giao
+          </a>
+          <a
+            href="/admin/orders?status=completed{% if current_search %}&search={{ current_search }}{% endif %}"
+            class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition {% if current_status == 'completed' %}bg-emerald-500/20 text-emerald-300 border border-emerald-500/50{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800{% endif %}"
+          >
+            Hoàn tất
+          </a>
+          <a
+            href="/admin/orders?status=cancelled{% if current_search %}&search={{ current_search }}{% endif %}"
+            class="px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition {% if current_status == 'cancelled' %}bg-rose-500/20 text-rose-300 border border-rose-500/50{% else %}text-slate-400 hover:text-slate-200 hover:bg-slate-800{% endif %}"
+          >
+            Đã hủy
+          </a>
+        </div>
+
+        <!-- Search Form -->
+        <form method="GET" action="/admin/orders" class="w-full md:w-80 flex items-center gap-2">
+          {% if current_status %}
+          <input type="hidden" name="status" value="{{ current_status }}" />
+          {% endif %}
+          <div class="relative flex-1">
+            <input
+              type="text"
+              name="search"
+              value="{{ current_search }}"
+              placeholder="Tìm theo tên, SĐT, địa chỉ..."
+              class="w-full pl-9 pr-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+            />
+            <svg class="w-4 h-4 text-slate-500 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </div>
+          <button type="submit" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700">
+            Lọc
+          </button>
+        </form>
+      </div>
+
+      <!-- Orders Data Table -->
+      <div class="bg-[#0f172a] border border-slate-800/80 rounded-2xl overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-slate-900/80 border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <th class="py-3.5 px-4 w-28">Mã đơn (#ID)</th>
+                <th class="py-3.5 px-4">Tên khách hàng & SĐT</th>
+                <th class="py-3.5 px-4">Địa chỉ giao hàng</th>
+                <th class="py-3.5 px-4 w-36">Tổng tiền</th>
+                <th class="py-3.5 px-4 w-36">Thời gian đặt</th>
+                <th class="py-3.5 px-4 w-40 text-center">Trạng thái</th>
+                <th class="py-3.5 px-4 w-64 text-center">Hành động</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60" id="orders-table-body">
+              {% if orders and orders|length > 0 %}
+                {% for order in orders %}
+                <tr class="hover:bg-slate-800/30 transition-colors order-row" id="order-row-{{ order.id }}">
+                  
+                  <!-- Cột 1: Mã đơn -->
+                  <td class="py-4 px-4 font-mono font-bold text-cyan-400 text-xs">
+                    <div class="flex items-center gap-1.5">
+                      <span>#{{ order.id }}</span>
+                      <span class="text-[10px] text-slate-500 font-normal">VBP{{ "%06d"|format(order.id) }}</span>
+                    </div>
+                  </td>
+
+                  <!-- Cột 2: Tên khách hàng & SĐT -->
+                  <td class="py-4 px-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-cyan-300">
+                        {{ order.customer_name[:1]|upper }}
+                      </div>
+                      <div>
+                        <div class="font-bold text-slate-100 text-sm">{{ order.customer_name }}</div>
+                        <div class="text-xs text-slate-400 flex items-center gap-1 font-mono mt-0.5">
+                          <svg class="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                          <a href="tel:{{ order.customer_phone }}" class="hover:text-cyan-400 hover:underline">{{ order.customer_phone }}</a>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- Cột 3: Địa chỉ giao hàng -->
+                  <td class="py-4 px-4 max-w-xs">
+                    <div class="text-xs text-slate-300 line-clamp-2" title="{{ order.customer_address }}">
+                      {{ order.customer_address }}
+                    </div>
+                    {% if order.note %}
+                    <div class="text-[11px] text-amber-400/90 italic mt-1 flex items-center gap-1">
+                      <span>📝</span>
+                      <span class="truncate">{{ order.note }}</span>
+                    </div>
+                    {% endif %}
+                  </td>
+
+                  <!-- Cột 4: Tổng tiền -->
+                  <td class="py-4 px-4 font-bold text-cyan-300 text-sm whitespace-nowrap">
+                    {{ order.total_price|currency }}
+                  </td>
+
+                  <!-- Cột 5: Thời gian đặt -->
+                  <td class="py-4 px-4 text-xs text-slate-400 whitespace-nowrap">
+                    {{ order.created_at|datetime_format }}
+                  </td>
+
+                  <!-- Cột 6: Trạng thái (Badge Màu) -->
+                  <td class="py-4 px-4 text-center">
+                    <span id="badge-order-{{ order.id }}" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                      {% if order.status == 'pending' %}
+                        badge-pending
+                      {% elif order.status == 'confirmed' %}
+                        badge-confirmed
+                      {% elif order.status == 'shipping' %}
+                        badge-shipping
+                      {% elif order.status == 'completed' %}
+                        badge-completed
+                      {% elif order.status == 'cancelled' %}
+                        badge-cancelled
+                      {% else %}
+                        bg-slate-800 text-slate-400 border border-slate-700
+                      {% endif %}
+                    ">
+                      {% if order.status == 'pending' %}
+                        ● Chờ xử lý
+                      {% elif order.status == 'confirmed' %}
+                        ✓ Đã xác nhận
+                      {% elif order.status == 'shipping' %}
+                        🚚 Đang giao
+                      {% elif order.status == 'completed' %}
+                        ★ Hoàn tất
+                      {% elif order.status == 'cancelled' %}
+                        ✕ Đã hủy
+                      {% else %}
+                        {{ order.status }}
+                      {% endif %}
+                    </span>
+                  </td>
+
+                  <!-- Cột 7: Hành động (Nút xem chi tiết & Menu thả xuống cập nhật) -->
+                  <td class="py-4 px-4 text-center">
+                    <div class="flex items-center justify-center gap-2">
+                      
+                      <!-- Nút Xem chi tiết sản phẩm -->
+                      <button
+                        type="button"
+                        onclick="viewOrderItems({{ order.id }})"
+                        class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-400 hover:text-cyan-300 text-xs font-semibold border border-slate-700 transition flex items-center gap-1"
+                        title="Xem chi tiết các sản phẩm đã đặt"
+                      >
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                        <span>Chi tiết</span>
+                      </button>
+
+                      <!-- Menu thả xuống cập nhật nhanh trạng thái -->
+                      <select
+                        onchange="quickUpdateStatus({{ order.id }}, this.value)"
+                        class="px-2 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none focus:border-cyan-400 cursor-pointer font-medium"
+                        title="Thay đổi trạng thái đơn hàng"
+                      >
+                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>Chờ xử lý</option>
+                        <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>Đã xác nhận</option>
+                        <option value="shipping" {% if order.status == 'shipping' %}selected{% endif %}>Đang giao</option>
+                        <option value="completed" {% if order.status == 'completed' %}selected{% endif %}>Hoàn tất</option>
+                        <option value="cancelled" {% if order.status == 'cancelled' %}selected{% endif %}>Hủy đơn</option>
+                      </select>
+
+                    </div>
+                  </td>
+
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="7" class="py-12 text-center text-slate-500">
+                    <div class="flex flex-col items-center justify-center gap-2">
+                      <span class="text-3xl">📭</span>
+                      <p class="text-sm font-semibold text-slate-400">Không tìm thấy đơn hàng nào phù hợp</p>
+                      <a href="/admin/orders" class="text-xs text-cyan-400 hover:underline">Xem tất cả đơn hàng</a>
+                    </div>
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       ORDER ITEMS DETAIL MODAL
+       ====================================================================== -->
+  <div
+    id="order-items-modal"
+    class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden"
+  >
+    <div class="bg-[#0f172a] border border-slate-700 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+        <div>
+          <h3 class="font-bold text-white text-base flex items-center gap-2">
+            <span>Chi tiết đơn hàng</span>
+            <span id="modal-order-code" class="text-cyan-400 font-mono text-sm">#--</span>
+          </h3>
+          <p id="modal-order-meta" class="text-xs text-slate-400 mt-0.5">Khách hàng: --</p>
+        </div>
+        <button
+          onclick="closeOrderItemsModal()"
+          class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold"
+        >
+          &times;
+        </button>
+      </div>
+
+      <!-- Modal Body: Products List -->
+      <div class="p-6 max-h-[60vh] overflow-y-auto space-y-3" id="modal-items-container">
+        <!-- Rendered via JavaScript -->
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-5 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between">
+        <div>
+          <span class="text-xs text-slate-400">Tổng thanh toán:</span>
+          <div id="modal-order-total" class="text-lg font-black text-cyan-300">0 ₫</div>
+        </div>
+        <button
+          onclick="closeOrderItemsModal()"
+          class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-semibold transition"
+        >
+          Đóng
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ======================================================================
+       INTERACTIVE JAVASCRIPT
+       ====================================================================== -->
+  <script>
+    // ── Toast Helper ──
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const isSuccess = type === 'success';
+      toast.className = `px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold border pointer-events-auto transition-all duration-300 flex items-center gap-2 ${
+        isSuccess
+          ? 'bg-slate-900 text-emerald-400 border-emerald-500/40 shadow-emerald-500/10'
+          : 'bg-slate-900 text-rose-400 border-rose-500/40 shadow-rose-500/10'
+      }`;
+      toast.innerHTML = `
+        <span>${isSuccess ? '✓' : '⚠️'}</span>
+        <span>${message}</span>
+      `;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // ── Cập nhật nhanh trạng thái qua AJAX ──
+    async function quickUpdateStatus(orderId, newStatus) {
+      const badge = document.getElementById(`badge-order-${orderId}`);
+      if (!badge) return;
+
+      try {
+        const response = await fetch(`/admin/orders/${orderId}/update-status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+
+        const data = await response.json();
+        if (response.ok && data.success) {
+          // Cập nhật giao diện badge tương ứng
+          updateBadgeUI(badge, newStatus);
+          showToast(data.message || `Đã cập nhật trạng thái đơn #${orderId}`);
+        } else {
+          showToast(data.error?.message || 'Không thể cập nhật trạng thái!', 'error');
+        }
+      } catch (err) {
+        console.error('Error updating status:', err);
+        showToast('Lỗi kết nối máy chủ khi cập nhật đơn hàng!', 'error');
+      }
+    }
+
+    function updateBadgeUI(badgeEl, status) {
+      badgeEl.className = 'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold';
+      if (status === 'pending') {
+        badgeEl.classList.add('badge-pending');
+        badgeEl.textContent = '● Chờ xử lý';
+      } else if (status === 'confirmed') {
+        badgeEl.classList.add('badge-confirmed');
+        badgeEl.textContent = '✓ Đã xác nhận';
+      } else if (status === 'shipping') {
+        badgeEl.classList.add('badge-shipping');
+        badgeEl.textContent = '🚚 Đang giao';
+      } else if (status === 'completed') {
+        badgeEl.classList.add('badge-completed');
+        badgeEl.textContent = '★ Hoàn tất';
+      } else if (status === 'cancelled') {
+        badgeEl.classList.add('badge-cancelled');
+        badgeEl.textContent = '✕ Đã hủy';
+      }
+    }
+
+    // ── Xem chi tiết các sản phẩm đã đặt ──
+    async function viewOrderItems(orderId) {
+      const modal = document.getElementById('order-items-modal');
+      const codeEl = document.getElementById('modal-order-code');
+      const metaEl = document.getElementById('modal-order-meta');
+      const totalEl = document.getElementById('modal-order-total');
+      const listEl = document.getElementById('modal-items-container');
+
+      listEl.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">Đang tải chi tiết...</div>';
+      modal.classList.remove('hidden');
+
+      try {
+        const res = await fetch(`/api/orders/${orderId}`);
+        if (!res.ok) throw new Error('Không thể tải chi tiết');
+        const order = await res.json();
+
+        codeEl.textContent = order.order_code || `#${order.id}`;
+        metaEl.textContent = `Khách hàng: ${order.customer_name} • SĐT: ${order.customer_phone} • ${order.created_at}`;
+        totalEl.textContent = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.total_price);
+
+        if (!order.items || order.items.length === 0) {
+          listEl.innerHTML = '<div class="text-center py-6 text-slate-500 text-xs">Không có sản phẩm nào.</div>';
+          return;
+        }
+
+        listEl.innerHTML = order.items.map(item => `
+          <div class="flex items-center justify-between p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div class="flex items-center gap-3">
+              <img
+                src="${item.image || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=100&q=70'}"
+                alt="${item.name}"
+                class="w-12 h-12 rounded-lg object-cover border border-slate-700 shrink-0"
+              />
+              <div>
+                <h4 class="font-bold text-white text-xs">${item.name}</h4>
+                <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-2">
+                  ${item.color ? `<span>Màu: <strong>${item.color}</strong></span>` : ''}
+                  ${item.storage ? `<span>• Bản: <strong>${item.storage}</strong></span>` : ''}
+                </div>
+                <div class="text-[11px] text-cyan-400 font-mono mt-0.5">
+                  Đơn giá: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs text-slate-300 font-medium">SL: <strong class="text-white text-sm">×${item.quantity}</strong></div>
+              <div class="text-xs font-bold text-cyan-300 mt-1">
+                ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.subtotal || (item.price * item.quantity))}
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        if (order.note) {
+          listEl.innerHTML += `
+            <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300">
+              <strong>Ghi chú của khách:</strong> ${order.note}
+            </div>
+          `;
+        }
+      } catch (err) {
+        listEl.innerHTML = '<div class="text-center py-6 text-rose-400 text-xs">Lỗi khi tải chi tiết đơn hàng.</div>';
+      }
+    }
+
+    function closeOrderItemsModal() {
+      document.getElementById('order-items-modal').classList.add('hidden');
+    }
+
+    // Đóng modal khi bấm phím Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeOrderItemsModal();
+    });
+  </script>
+</body>
+</html>

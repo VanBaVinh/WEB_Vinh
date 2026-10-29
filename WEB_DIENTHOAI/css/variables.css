@@ -1,0 +1,97 @@
+/* ==========================================================================
+   VinhBaPhone Design System - Signature Cyber-Tech Visual Identity
+   Electric Indigo (#2563EB) & Midnight Slate (#0F172A) & Platinum (#F8FAFC)
+   ========================================================================== */
+
+:root {
+  /* Brand Tech Colors (Primary: Royal Blue / Electric Indigo) */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-dark: #1e40af;
+  --primary-light: rgba(37, 99, 235, 0.08);
+  --primary-gradient: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+  --brand-gradient: linear-gradient(135deg, #2563eb 0%, #6366f1 50%, #4f46e5 100%);
+  
+  /* Dark Surface (Header, Footer, Tech Banners) */
+  --dark-surface: #0f172a;
+  --dark-surface-glass: rgba(15, 23, 42, 0.92);
+  --dark-card: #1e293b;
+  --dark-border: rgba(255, 255, 255, 0.1);
+
+  /* Flash Sale & Deal Gradient */
+  --flash-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+  --flash-tag-gradient: linear-gradient(135deg, #f97316 0%, #e11d48 100%);
+  
+  /* Accent Colors (Price, Highlights & CTAs) */
+  --accent-price: #e11d48; /* Đỏ San Hô cao cấp cho giá khuyến mãi */
+  --accent-orange: #f97316; /* Cam Hổ Phách */
+  --accent-gold: #f59e0b;
+  --accent-blue: #2563eb;
+  --accent-indigo: #4f46e5;
+  --accent-cyan: #06b6d4;
+  --accent-green: #10b981;
+  --accent-purple: #8b5cf6;
+
+  /* Surfaces & Backgrounds */
+  --bg-main: #f8fafc; /* Xám trắng bạch kim chuẩn hiện đại */
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --bg-card: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --border-color: #e2e8f0;
+  --border-hover: #2563eb;
+  
+  /* Text Colors */
+  --text-main: #0f172a; /* Slate 900 đậm đà, sang trọng */
+  --text-muted: #64748b;
+  --text-sub: #94a3b8;
+  --text-white: #ffffff;
+  
+  /* Badges & Status */
+  --tag-installment-bg: #eff6ff;
+  --tag-installment-text: #2563eb;
+  --tag-discount-bg: #fff1f2;
+  --tag-discount-text: #e11d48;
+  --tag-spec-bg: #f1f5f9;
+  --tag-spec-text: #475569;
+  --tag-smember-bg: #f5f3ff;
+  --tag-smember-text: #6366f1;
+
+  /* Typography */
+  --font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Trust & Credibility Badges */
+  --trust-green: #059669;
+  --trust-green-bg: #ecfdf5;
+  --trust-gold: #d97706;
+  --trust-gold-bg: #fffbeb;
+  --trust-blue: #0284c7;
+  --trust-blue-bg: #f0f9ff;
+  --trust-red: #e11d48;
+  --trust-red-bg: #fff1f2;
+
+  /* Modern Clean Shadows */
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+  --shadow-hover: 0 14px 28px -4px rgba(37, 99, 235, 0.16), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
+  --shadow-glass: 0 8px 30px rgba(15, 23, 42, 0.08);
+  --shadow-premium: 0 12px 32px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 18px 36px -4px rgba(37, 99, 235, 0.14), 0 8px 16px -4px rgba(15, 23, 42, 0.05);
+
+  /* Borders & Radius (16px cho khung lớn, 12px cho thẻ sản phẩm) */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Layout */
+  --max-width: 1240px;
+  --header-height: 68px;
+}

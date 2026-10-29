@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bảng Điều Khiển — VinhBaPhone Admin</title>
+  <meta name="description" content="Trung tâm quản trị dữ liệu, phân quyền tài khoản và giám sát hệ thống VinhBaPhone." />
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          colors: {
+            darkBg: '#070b14',
+            darkSidebar: '#0b1120',
+            darkCard: '#0f172a',
+            cyanGlow: '#00f0ff',
+            purpleGlow: '#bf00ff',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Admin Stylesheet -->
+  <link rel="stylesheet" href="app/static/css/admin.css" />
+  <link rel="stylesheet" href="/static/css/admin.css" />
+</head>
+<body class="bg-[#070b14] text-slate-100 min-h-screen flex antialiased">
+
+  <!-- ======================================================================
+       SIDEBAR
+       ====================================================================== -->
+  <aside class="w-64 bg-[#0F172A] border-r border-slate-800 flex flex-col shrink-0 min-h-screen sticky top-0 h-screen shadow-xl">
+    <!-- Brand Header -->
+    <div class="p-6 border-b border-slate-800 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-white shadow-lg shadow-blue-500/25">
+        ⚡
+      </div>
+      <div>
+        <div class="font-extrabold text-base tracking-wide text-white">
+          VinhBa<span class="text-blue-500">Phone</span>
+        </div>
+        <div class="text-[10px] font-semibold text-slate-400 tracking-wider uppercase">
+          SaaS Admin Portal
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+      <button
+        data-tab="overview"
+        class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all border border-transparent bg-cyan-500/10 text-cyan-400 border-cyan-500/40 text-left"
+      >
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        <span>Tổng Quan</span>
+      </button>
+
+      <button
+        data-tab="orders"
+        class="nav-tab-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 transition-all border border-transparent text-left cursor-pointer"
+      >
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+          <span>Quản Lý Đơn Hàng</span>
+        </div>
+        <span id="sidebar-pending-badge" class="px-2 py-0.5 text-xs font-bold bg-amber-500 text-slate-950 rounded-full hidden">0</span>
+      </button>
+
+      <button
+        data-tab="products"
+        class="nav-tab-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 transition-all border border-transparent text-left cursor-pointer"
+      >
+        <div class="flex items-center gap-3">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          <span>Quản Lý Sản Phẩm</span>
+        </div>
+        <span id="sidebar-products-badge" class="px-2 py-0.5 text-[11px] font-bold bg-slate-800 text-cyan-400 border border-slate-700 rounded-full">88</span>
+      </button>
+
+      <button
+        data-tab="users"
+        class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 transition-all border border-transparent text-left cursor-pointer"
+      >
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        <span>Quản Lý Người Dùng</span>
+      </button>
+
+      <button
+        data-tab="system"
+        class="nav-tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 transition-all border border-transparent text-left cursor-pointer"
+      >
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+        <span>Giám Sát Hệ Thống</span>
+      </button>
+
+      <div class="pt-4 mt-4 border-t border-slate-800/60 space-y-1.5">
+        <div class="px-3.5 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-500">Lối tắt điều hành</div>
+        <a
+          href="/admin/orders"
+          class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-semibold text-cyan-400 hover:bg-cyan-500/10 border border-cyan-500/20 transition-colors"
+          title="Mở giao diện quản lý đơn hàng chuyên sâu (Jinja2 Template)"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <span>Trang Đơn Hàng Chuyên Sâu</span>
+        </a>
+
+        <a
+          href="../index.html"
+          target="_blank"
+          class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 transition-colors"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+          <span>Xem Trang Chủ Bán Hàng ↗</span>
+        </a>
+        <a
+          href="/docs"
+          target="_blank"
+          class="flex items-center gap-3 px-3.5 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-purple-400 hover:bg-slate-800/40 transition-colors"
+        >
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <span>Tài Liệu OpenAPI (Swagger)</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="p-4 border-t border-slate-800/80">
+      <div class="text-[11px] text-slate-500 text-center font-mono">
+        VinhBaPhone Admin v4.0 • SQLite WAL
+      </div>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       MAIN CONTENT WRAPPER
+       ====================================================================== -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- HEADER -->
+    <header class="h-18 bg-[#0b1120]/90 backdrop-blur-md border-b border-slate-800/80 px-8 py-3.5 flex items-center justify-between sticky top-0 z-30">
+      <!-- Title & Live Status Pill -->
+      <div class="flex items-center gap-4">
+        <div>
+          <h2 id="page-title" class="text-lg font-extrabold text-slate-100 tracking-tight">
+            Trung Tâm Quản Trị & Điều Hành
+          </h2>
+          <p id="page-subtitle" class="text-xs text-slate-400 hidden sm:block">Quản lý kho sản phẩm, duyệt đơn hàng và giám sát doanh thu thời gian thực</p>
+        </div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-cyber-pulse"></span>
+          <span>Trực Tuyến</span>
+        </div>
+      </div>
+
+      <!-- Quick Actions & User Profile -->
+      <div class="flex items-center gap-3">
+        <div class="hidden xl:flex items-center gap-2 mr-1">
+          <button
+            type="button"
+            onclick="switchTab('products'); openAddProductModal();"
+            class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 flex items-center gap-1.5 cursor-pointer transition"
+          >
+            <span>＋</span>
+            <span>Thêm Sản Phẩm</span>
+          </button>
+          <button
+            type="button"
+            onclick="syncCatalogNow()"
+            class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition"
+            title="Đồng bộ hóa danh mục sản phẩm chuẩn từ js/data.js"
+          >
+            <span>🔄</span>
+            <span>Đồng Bộ Kho</span>
+          </button>
+          <a
+            href="../index.html"
+            target="_blank"
+            class="px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 text-xs font-semibold flex items-center gap-1.5 transition"
+          >
+            <span>🛍️</span>
+            <span>Xem Web</span>
+          </a>
+        </div>
+
+        <div class="flex items-center gap-3 pl-4 border-l border-slate-800/80">
+          <img
+            id="header-user-avatar"
+            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80"
+            alt="Avatar"
+            class="w-9 h-9 rounded-full object-cover border border-cyan-500/40 bg-slate-800"
+          />
+          <div class="text-right">
+            <div id="header-user-name" class="text-sm font-bold text-slate-200">Admin</div>
+            <div id="header-user-role" class="text-xs"></div>
+          </div>
+        </div>
+
+        <button
+          id="logout-btn"
+          class="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer"
+          title="Đăng xuất"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="flex-1 p-8 overflow-y-auto">
+
+      <!-- ==================================================================
+           TAB 1: TỔNG QUAN (OVERVIEW)
+           ================================================================== -->
+      <section id="tab-overview" class="tab-panel space-y-8">
+        <!-- 4 Primary KPI Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <!-- KPI 1: Tổng Doanh Thu -->
+          <div class="glass-panel glass-panel-hover rounded-2xl p-5 relative overflow-hidden border border-emerald-500/20 bg-gradient-to-br from-slate-900/90 to-emerald-950/20">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-bold uppercase text-emerald-400 tracking-wider">Tổng Doanh Thu</p>
+                <h3 id="stat-total-revenue" class="text-2xl font-black text-white mt-1.5 truncate">0 ₫</h3>
+                <p class="text-[11px] text-slate-400 font-medium mt-1">Đơn hàng thực tế trong DB</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 text-xl shadow-lg shadow-emerald-500/10">
+                💰
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 2: Tổng Đơn Hàng -->
+          <div class="glass-panel glass-panel-hover rounded-2xl p-5 relative overflow-hidden border border-blue-500/20 bg-gradient-to-br from-slate-900/90 to-blue-950/20 cursor-pointer" onclick="switchTab('orders')">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-bold uppercase text-blue-400 tracking-wider">Tổng Đơn Hàng</p>
+                <h3 id="stat-total-orders" class="text-2xl font-black text-white mt-1.5">0</h3>
+                <p class="text-[11px] text-slate-400 font-medium mt-1">Khách hàng đặt trên Store</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-400 shrink-0 text-xl shadow-lg shadow-blue-500/10">
+                📦
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 3: Đơn Chờ Xử Lý -->
+          <div class="glass-panel glass-panel-hover rounded-2xl p-5 relative overflow-hidden border border-amber-500/20 bg-gradient-to-br from-slate-900/90 to-amber-950/20 cursor-pointer" onclick="switchTab('orders')">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-bold uppercase text-amber-400 tracking-wider">Đơn Chờ Xử Lý</p>
+                <h3 id="stat-pending-orders" class="text-2xl font-black text-amber-300 mt-1.5">0</h3>
+                <p class="text-[11px] text-amber-400/80 font-medium mt-1 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                  Cần duyệt và giao ngay
+                </p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 text-xl shadow-lg shadow-amber-500/10">
+                ⏳
+              </div>
+            </div>
+          </div>
+
+          <!-- KPI 4: Tổng Sản Phẩm -->
+          <div class="glass-panel glass-panel-hover rounded-2xl p-5 relative overflow-hidden border border-indigo-500/20 bg-gradient-to-br from-slate-900/90 to-indigo-950/20 cursor-pointer" onclick="switchTab('products')">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[11px] font-bold uppercase text-indigo-400 tracking-wider">Tổng Sản Phẩm</p>
+                <h3 id="stat-total-products" class="text-2xl font-black text-white mt-1.5">--</h3>
+                <p class="text-[11px] text-slate-400 font-medium mt-1">Danh mục sản phẩm mở bán</p>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 text-xl shadow-lg shadow-indigo-500/10">
+                📱
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Secondary Metric Badges -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="glass-panel rounded-xl px-4 py-3 flex items-center justify-between border border-slate-800">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">⚡</span>
+              <div>
+                <div class="text-xs text-slate-400">Deal Flash Sale</div>
+                <div id="stat-flash-sales" class="font-bold text-amber-400 text-sm">--</div>
+              </div>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-medium">Đang chạy</span>
+          </div>
+
+          <div class="glass-panel rounded-xl px-4 py-3 flex items-center justify-between border border-slate-800">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">⚠️</span>
+              <div>
+                <div class="text-xs text-slate-400">Sản phẩm sắp hết hàng</div>
+                <div id="stat-low-stock" class="font-bold text-rose-400 text-sm">--</div>
+              </div>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 font-medium">Tồn kho ≤ 5</span>
+          </div>
+
+          <div class="glass-panel rounded-xl px-4 py-3 flex items-center justify-between border border-slate-800">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">👥</span>
+              <div>
+                <div class="text-xs text-slate-400">Tài khoản người dùng</div>
+                <div class="flex items-center gap-2">
+                  <span id="stat-total-users" class="font-bold text-white text-sm">--</span>
+                  <span id="stat-active-users" class="text-[11px] text-emerald-400"></span>
+                </div>
+              </div>
+            </div>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 font-medium">Hệ thống</span>
+          </div>
+        </div>
+
+        <!-- Phân Bổ Kho Hàng Theo Danh Mục -->
+        <div class="glass-panel rounded-2xl p-6 border border-slate-800/80">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">📊</span>
+              <h4 class="font-bold text-base text-slate-100">Phân Bổ Sản Phẩm Theo Danh Mục</h4>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 font-semibold">Click để lọc nhanh</span>
+            </div>
+            <button onclick="switchTab('products')" class="text-xs text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer">
+              Quản lý toàn bộ kho hàng →
+            </button>
+          </div>
+          <div id="overview-category-breakdown" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <!-- Rendered dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- Recent Orders Highlight -->
+        <div class="glass-panel rounded-2xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">🛒</span>
+              <h4 class="font-bold text-base text-slate-100">Đơn Hàng Mới Nhất</h4>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-semibold">Thời gian thực</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <a href="/admin/orders" class="text-xs text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1">
+                <span>Mở trang đơn hàng chi tiết</span>
+                <span>→</span>
+              </a>
+              <button onclick="switchTab('orders')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700 transition cursor-pointer">
+                Quản lý tất cả
+              </button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="text-xs uppercase text-slate-400 border-b border-slate-800/80 bg-slate-900/40">
+                  <th class="py-2.5 px-4 font-semibold">Mã đơn</th>
+                  <th class="py-2.5 px-4 font-semibold">Khách hàng</th>
+                  <th class="py-2.5 px-4 font-semibold">Số điện thoại</th>
+                  <th class="py-2.5 px-4 font-semibold">Số món</th>
+                  <th class="py-2.5 px-4 font-semibold">Tổng tiền</th>
+                  <th class="py-2.5 px-4 font-semibold">Trạng thái</th>
+                  <th class="py-2.5 px-4 font-semibold">Thời gian</th>
+                  <th class="py-2.5 px-4 font-semibold text-right">Chi tiết</th>
+                </tr>
+              </thead>
+              <tbody id="recent-orders-list" class="divide-y divide-slate-800/60">
+                <!-- Rendered dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 2 Side Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Recent Users Card -->
+          <div class="glass-panel rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-base text-slate-200">Người Dùng Mới</h4>
+              <button onclick="switchTab('users')" class="text-xs text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer">Xem tất cả →</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead>
+                  <tr class="text-xs uppercase text-slate-400 border-b border-slate-800">
+                    <th class="py-2.5 px-4 font-semibold">Username</th>
+                    <th class="py-2.5 px-4 font-semibold">Quyền</th>
+                    <th class="py-2.5 px-4 font-semibold">Ngày tạo</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-users-list">
+                  <!-- Dynamic JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Recent Products Card -->
+          <div class="glass-panel rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-bold text-base text-slate-200">Sản Phẩm Mới Cập Nhật</h4>
+              <button onclick="switchTab('products')" class="text-xs text-cyan-400 hover:text-cyan-300 font-semibold cursor-pointer">Xem tất cả →</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead>
+                  <tr class="text-xs uppercase text-slate-400 border-b border-slate-800">
+                    <th class="py-2.5 px-4 font-semibold">Sản phẩm</th>
+                    <th class="py-2.5 px-4 font-semibold">Giá bán</th>
+                    <th class="py-2.5 px-4 font-semibold">Tồn kho</th>
+                    <th class="py-2.5 px-4 font-semibold">Loại</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-products-list">
+                  <!-- Dynamic JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           TAB: QUẢN LÝ ĐƠN HÀNG (ORDERS MANAGEMENT)
+           ================================================================== -->
+      <section id="tab-orders" class="tab-panel hidden space-y-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <!-- Search & Filter -->
+          <div class="flex flex-wrap items-center gap-3 flex-1">
+            <div class="relative flex-1 min-w-[240px] max-w-md">
+              <input
+                type="text"
+                id="orders-search-input"
+                placeholder="Tìm mã đơn, tên khách, số điện thoại, địa chỉ..."
+                class="w-full pl-9 pr-4 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+              />
+              <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <select
+              id="orders-status-filter"
+              class="px-3 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-300 focus:outline-none focus:border-cyan-400 cursor-pointer"
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="pending">Chờ xử lý</option>
+              <option value="confirmed">Đã xác nhận</option>
+              <option value="shipping">Đang giao</option>
+              <option value="completed">Hoàn tất</option>
+              <option value="cancelled">Đã hủy</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button
+              onclick="loadOrdersList()"
+              class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              <span>Làm mới</span>
+            </button>
+            <a
+              href="/admin/orders"
+              class="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-purple-500 text-slate-950 font-bold text-xs shadow-md transition flex items-center gap-1.5"
+            >
+              <span>Mở Toàn Màn Hình</span>
+              <span>↗</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Order Status Pills -->
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" onclick="setOrderQuickStatus('', this)" class="order-quick-pill px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer transition">Tất cả đơn</button>
+          <button type="button" onclick="setOrderQuickStatus('pending', this)" class="order-quick-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-amber-300 border border-slate-800 hover:border-amber-500/40 cursor-pointer transition">⏳ Chờ xử lý</button>
+          <button type="button" onclick="setOrderQuickStatus('confirmed', this)" class="order-quick-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-blue-300 border border-slate-800 hover:border-blue-500/40 cursor-pointer transition">✓ Đã xác nhận</button>
+          <button type="button" onclick="setOrderQuickStatus('shipping', this)" class="order-quick-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-purple-300 border border-slate-800 hover:border-purple-500/40 cursor-pointer transition">🚚 Đang giao</button>
+          <button type="button" onclick="setOrderQuickStatus('completed', this)" class="order-quick-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-emerald-300 border border-slate-800 hover:border-emerald-500/40 cursor-pointer transition">★ Hoàn tất</button>
+          <button type="button" onclick="setOrderQuickStatus('cancelled', this)" class="order-quick-pill px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 text-rose-300 border border-slate-800 hover:border-rose-500/40 cursor-pointer transition">✕ Đã hủy</button>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead>
+                <tr class="bg-slate-900/80 border-b border-slate-800 text-xs uppercase text-slate-400 font-bold">
+                  <th class="py-3 px-4 w-28">Mã đơn (#ID)</th>
+                  <th class="py-3 px-4">Tên khách hàng & SĐT</th>
+                  <th class="py-3 px-4">Địa chỉ giao hàng</th>
+                  <th class="py-3 px-4 w-36">Tổng tiền</th>
+                  <th class="py-3 px-4 w-36">Thời gian đặt</th>
+                  <th class="py-3 px-4 w-36 text-center">Trạng thái</th>
+                  <th class="py-3 px-4 w-60 text-center">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="orders-table-body" class="divide-y divide-slate-800/60">
+                <!-- Rendered dynamically via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           TAB 2: QUẢN LÝ NGƯỜI DÙNG (USERS)
+           ================================================================== -->
+      <section id="tab-users" class="tab-panel hidden space-y-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <!-- Search & Filter -->
+          <div class="flex items-center gap-3 flex-1 max-w-lg">
+            <div class="relative flex-1">
+              <input
+                type="text"
+                id="users-search-input"
+                placeholder="Tìm username, email, họ tên..."
+                class="w-full pl-9 pr-4 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+              />
+              <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <select
+              id="users-role-filter"
+              class="px-3 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-300 focus:outline-none focus:border-cyan-400"
+            >
+              <option value="">Tất cả vai trò</option>
+              <option value="admin">Admin</option>
+              <option value="staff">Nhân viên</option>
+              <option value="user">Khách hàng</option>
+            </select>
+          </div>
+
+          <!-- Add User Button -->
+          <button
+            id="btn-add-user"
+            class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/20 flex items-center gap-2 cursor-pointer transition-all"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            <span>Thêm Người Dùng</span>
+          </button>
+        </div>
+
+        <!-- Users Table -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900/60 text-xs uppercase text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="py-3 px-4 font-semibold">ID</th>
+                  <th class="py-3 px-4 font-semibold">Tài khoản</th>
+                  <th class="py-3 px-4 font-semibold">Email</th>
+                  <th class="py-3 px-4 font-semibold">Vai trò</th>
+                  <th class="py-3 px-4 font-semibold">Trạng thái</th>
+                  <th class="py-3 px-4 font-semibold text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="users-table-body">
+                <!-- Dynamic JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           TAB 3: QUẢN LÝ SẢN PHẨM (PRODUCTS)
+           ================================================================== -->
+      <section id="tab-products" class="tab-panel hidden space-y-5">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <!-- Search & Filter -->
+          <div class="flex flex-wrap items-center gap-3 flex-1">
+            <div class="relative flex-1 min-w-[240px] max-w-md">
+              <input
+                type="text"
+                id="products-search-input"
+                placeholder="Tìm tên máy, thương hiệu, mã ID..."
+                class="w-full pl-9 pr-4 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400"
+              />
+              <svg class="w-4 h-4 text-slate-500 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <select
+              id="products-category-filter"
+              class="px-3 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-cyan-400 cursor-pointer"
+            >
+              <option value="">📂 Tất cả danh mục (11)</option>
+              <option value="phone">📱 Điện thoại</option>
+              <option value="laptop">💻 Laptop & MacBook</option>
+              <option value="tablet">📟 Máy tính bảng & iPad</option>
+              <option value="pc">🖥️ PC & Màn hình đồ họa</option>
+              <option value="gaming">🎮 Máy chơi game & Gear</option>
+              <option value="audio">🎧 Tai nghe & Loa Hi-Res</option>
+              <option value="watch">⌚ Đồng hồ thông minh</option>
+              <option value="smarthome">🏠 Nhà thông minh & Robot</option>
+              <option value="accessories">🔌 Phụ kiện sạc GaN & Cáp</option>
+              <option value="storage">💾 Ổ cứng SSD & Thẻ nhớ</option>
+              <option value="used">💎 Máy cũ Like New 99%</option>
+            </select>
+            <select
+              id="products-sort-select"
+              onchange="applyProductsClientFilterAndSort()"
+              class="px-3 py-2 bg-slate-900/80 border border-slate-700/80 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-cyan-400 cursor-pointer"
+            >
+              <option value="id-desc">Mới cập nhật</option>
+              <option value="price-desc">Giá: Cao → Thấp</option>
+              <option value="price-asc">Giá: Thấp → Cao</option>
+              <option value="stock-asc">Tồn kho: Thấp → Cao</option>
+              <option value="name-asc">Tên sản phẩm: A → Z</option>
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2.5">
+            <button
+              type="button"
+              onclick="syncCatalogNow()"
+              class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition"
+              title="Đồng bộ lại toàn bộ sản phẩm từ js/data.js"
+            >
+              <span>🔄</span>
+              <span>Đồng Bộ Kho</span>
+            </button>
+            <button
+              id="btn-add-product"
+              class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-purple-500 hover:from-cyan-300 hover:to-purple-400 text-slate-950 font-bold text-sm shadow-lg shadow-cyan-500/20 flex items-center gap-2 cursor-pointer transition-all"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              <span>Thêm Sản Phẩm Mới</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Filter Pills & Result Counter -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-900/50 p-3 rounded-xl border border-slate-800/80">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-xs font-semibold text-slate-400 mr-1">Lọc nhanh:</span>
+            <button type="button" onclick="setProductQuickMode('all', this)" class="prod-quick-pill px-3 py-1 rounded-lg text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer transition">Tất cả</button>
+            <button type="button" onclick="setProductQuickMode('flash', this)" class="prod-quick-pill px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-amber-300 border border-slate-700 hover:border-amber-500/40 cursor-pointer transition">⚡ Đang Flash Sale</button>
+            <button type="button" onclick="setProductQuickMode('low', this)" class="prod-quick-pill px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-orange-300 border border-slate-700 hover:border-orange-500/40 cursor-pointer transition">⚠️ Sắp hết hàng (≤5)</button>
+            <button type="button" onclick="setProductQuickMode('out', this)" class="prod-quick-pill px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-rose-300 border border-slate-700 hover:border-rose-500/40 cursor-pointer transition">❌ Hết hàng (0)</button>
+          </div>
+          <div id="products-result-count" class="text-xs font-bold text-slate-300">
+            Đang hiển thị -- sản phẩm
+          </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="glass-panel rounded-2xl overflow-hidden border border-slate-800">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="py-3 px-4 font-semibold w-16">ID</th>
+                  <th class="py-3 px-4 font-semibold">Sản phẩm & Thương hiệu</th>
+                  <th class="py-3 px-4 font-semibold w-40">Danh mục</th>
+                  <th class="py-3 px-4 font-semibold w-40">Giá bán & Niêm yết</th>
+                  <th class="py-3 px-4 font-semibold w-40">Tồn kho</th>
+                  <th class="py-3 px-4 font-semibold w-28 text-center">Flash Sale</th>
+                  <th class="py-3 px-4 font-semibold text-right w-52">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <!-- Dynamic JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================================================================
+           TAB 4: GIÁM SÁT HỆ THỐNG (SYSTEM HEALTH)
+           ================================================================== -->
+      <section id="tab-system" class="tab-panel hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="glass-panel rounded-2xl p-6 space-y-4">
+            <h4 class="font-bold text-base text-slate-100 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+              Thông Số Môi Trường Máy Chủ
+            </h4>
+            <div class="space-y-3 text-sm divide-y divide-slate-800/80">
+              <div class="flex justify-between pt-2">
+                <span class="text-slate-400">Trạng thái Server:</span>
+                <span id="sys-status" class="font-semibold text-emerald-400">ONLINE</span>
+              </div>
+              <div class="flex justify-between pt-2">
+                <span class="text-slate-400">Hệ điều hành:</span>
+                <span id="sys-platform" class="font-mono text-slate-200">--</span>
+              </div>
+              <div class="flex justify-between pt-2">
+                <span class="text-slate-400">Phiên bản Python:</span>
+                <span id="sys-python" class="font-mono text-slate-200">--</span>
+              </div>
+              <div class="flex justify-between pt-2">
+                <span class="text-slate-400">Cơ sở dữ liệu:</span>
+                <span id="sys-database" class="font-semibold text-cyan-400">SQLite (WAL Mode)</span>
+              </div>
+              <div class="flex justify-between pt-2">
+                <span class="text-slate-400">Kích thước file DB:</span>
+                <span id="sys-db-size" class="font-mono text-slate-200">--</span>
+              </div>
+              <div class="flex justify-between pt-2">
+                <span class="text-slate-400">Thời gian hệ thống:</span>
+                <span id="sys-server-time" class="font-mono text-slate-300">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-panel rounded-2xl p-6 space-y-4">
+            <h4 class="font-bold text-base text-slate-100 flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+              Tải Tài Nguyên Hệ Thống
+            </h4>
+            <div class="space-y-4 text-sm">
+              <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div class="flex justify-between mb-1">
+                  <span class="text-slate-400">Mức sử dụng CPU:</span>
+                  <span id="sys-cpu" class="font-bold text-cyan-400">--</span>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+                <div class="flex justify-between mb-1">
+                  <span class="text-slate-400">Bộ nhớ RAM:</span>
+                  <span id="sys-ram" class="font-bold text-purple-400">--</span>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400">
+                <p>🔒 <strong>Bảo mật:</strong> Toàn bộ dữ liệu mật khẩu được băm qua Bcrypt với Salt chuẩn 12 rounds. Xác thực sử dụng JSON Web Token chuẩn HS256 có thời hạn 24 giờ.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 1: NGƯỜI DÙNG (THÊM / SỬA)
+       ====================================================================== -->
+  <div id="user-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-white/10 relative">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h3 id="user-modal-title" class="font-bold text-lg text-slate-100">Thêm Người Dùng Mới</h3>
+        <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-200 text-xl font-bold">×</button>
+      </div>
+
+      <form id="user-form" class="space-y-4 mt-4">
+        <input type="hidden" id="user-id-field" />
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tên đăng nhập *</label>
+          <input
+            type="text"
+            id="user-username-input"
+            required
+            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Email *</label>
+          <input
+            type="email"
+            id="user-email-input"
+            required
+            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Họ và tên</label>
+          <input
+            type="text"
+            id="user-fullname-input"
+            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+
+        <div id="user-password-container">
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">
+            Mật khẩu <span id="user-password-hint" class="text-slate-500 font-normal"></span>
+          </label>
+          <input
+            type="password"
+            id="user-password-input"
+            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Vai trò</label>
+            <select
+              id="user-role-select"
+              class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+            >
+              <option value="user">Khách hàng</option>
+              <option value="staff">Nhân viên</option>
+              <option value="admin">Admin Quản trị</option>
+            </select>
+          </div>
+          <div class="flex items-center pt-6">
+            <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-300">
+              <input type="checkbox" id="user-active-checkbox" checked class="w-4 h-4 accent-cyan-500 rounded" />
+              <span>Kích hoạt tài khoản</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <button
+            type="button"
+            onclick="closeUserModal()"
+            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition-colors"
+          >
+            Hủy bỏ
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-purple-500 text-slate-950 font-bold text-sm shadow-md transition-all"
+          >
+            Lưu Thông Tin
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2: SẢN PHẨM (THÊM / SỬA)
+       ====================================================================== -->
+  <div id="product-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
+    <div class="glass-panel w-full max-w-xl rounded-2xl p-6 shadow-2xl border border-white/10 relative max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h3 id="product-modal-title" class="font-bold text-lg text-slate-100">Thêm Sản Phẩm Mới</h3>
+        <button onclick="closeProductModal()" class="text-slate-400 hover:text-slate-200 text-xl font-bold">×</button>
+      </div>
+
+      <form id="product-form" class="space-y-4 mt-4">
+        <input type="hidden" id="product-id-field" />
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tên sản phẩm *</label>
+          <input
+            type="text"
+            id="prod-name-input"
+            required
+            placeholder="Ví dụ: iPhone 16 Pro Max 256GB..."
+            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Danh mục *</label>
+            <select
+              id="prod-category-select"
+              required
+              class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+            >
+              <option value="phone">📱 Điện thoại</option>
+              <option value="laptop">💻 Laptop & MacBook</option>
+              <option value="tablet">📟 Máy tính bảng & iPad</option>
+              <option value="pc">🖥️ PC & Màn hình đồ họa</option>
+              <option value="gaming">🎮 Máy chơi game & Gear</option>
+              <option value="audio">🎧 Tai nghe & Loa Hi-Res</option>
+              <option value="watch">⌚ Đồng hồ thông minh</option>
+              <option value="smarthome">🏠 Nhà thông minh & Robot</option>
+              <option value="accessories">🔌 Phụ kiện sạc GaN & Cáp</option>
+              <option value="storage">💾 Ổ cứng SSD & Thẻ nhớ</option>
+              <option value="used">💎 Máy cũ Like New 99%</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Thương hiệu *</label>
+            <input
+              type="text"
+              id="prod-brand-input"
+              required
+              placeholder="Apple, Samsung, Sony..."
+              class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Giá bán (VNĐ) *</label>
+            <input
+              type="number"
+              id="prod-price-input"
+              required
+              min="0"
+              step="1000"
+              placeholder="34990000"
+              class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Giá gốc niêm yết</label>
+            <input
+              type="number"
+              id="prod-original-price-input"
+              min="0"
+              step="1000"
+              placeholder="36990000"
+              class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Tồn kho *</label>
+            <input
+              type="number"
+              id="prod-stock-input"
+              required
+              min="0"
+              value="10"
+              class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-400 uppercase">Link Ảnh Sản Phẩm (Hoặc Tự Tạo Ảnh Studio)</label>
+            <button
+              type="button"
+              onclick="autoMatchProductImage()"
+              class="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border border-cyan-500/30 text-[11px] font-bold cursor-pointer transition"
+            >
+              ✨ Tự khớp ảnh chuẩn theo tên máy
+            </button>
+          </div>
+          <input
+            type="text"
+            id="prod-image-input"
+            placeholder="Dán URL ảnh hoặc bấm nút 'Tự khớp ảnh chuẩn theo tên máy'..."
+            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+          />
+          <div class="mt-2.5 p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center gap-4">
+            <div class="w-16 h-16 rounded-lg bg-white p-1 border border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+              <img id="prod-image-preview" src="" alt="Xem trước ảnh" class="w-full h-full object-contain" />
+            </div>
+            <div class="text-xs">
+              <div class="font-bold text-slate-200">Xem trước hình ảnh thực tế (Khung chuẩn 1:1)</div>
+              <p class="text-[11px] text-slate-400 mt-0.5">Nếu bỏ trống link ảnh, hệ thống tự động tạo ảnh Studio khớp 100% với tên & dòng sản phẩm.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Huy hiệu (Badge)</label>
+            <input
+              type="text"
+              id="prod-badge-input"
+              placeholder="HOT SALE, MỚI RA MẮT..."
+              class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+          <div class="flex items-center gap-4 pt-6">
+            <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-300">
+              <input type="checkbox" id="prod-flash-checkbox" class="w-4 h-4 accent-amber-500 rounded" />
+              <span>⚡ Flash Sale</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-sm text-slate-300">
+              <input type="checkbox" id="product-active-checkbox" checked class="w-4 h-4 accent-emerald-500 rounded" />
+              <span>Hiển thị</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Mô tả tóm tắt</label>
+          <textarea
+            id="prod-desc-input"
+            rows="3"
+            placeholder="Mô tả thông số hoặc điểm nổi bật của sản phẩm..."
+            class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-cyan-400"
+          ></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+          <button
+            type="button"
+            onclick="closeProductModal()"
+            class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-semibold transition-colors"
+          >
+            Hủy bỏ
+          </button>
+          <button
+            type="submit"
+            class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-purple-500 text-slate-950 font-bold text-sm shadow-md transition-all"
+          >
+            Lưu Sản Phẩm
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 2B: SỬA NHANH GIÁ BÁN & TỒN KHO (QUICK EDIT MODAL)
+       ====================================================================== -->
+  <div id="quick-edit-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 hidden bg-black/70 backdrop-blur-sm">
+    <div class="glass-panel w-full max-w-md rounded-2xl p-6 shadow-2xl border border-cyan-500/30 relative bg-[#0f172a]">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <h3 class="font-bold text-base text-slate-100">⚡ Sửa Nhanh Giá & Tồn Kho</h3>
+          <p id="qe-prod-name" class="text-xs text-cyan-400 font-semibold mt-0.5 truncate max-w-xs">--</p>
+        </div>
+        <button onclick="closeQuickEditModal()" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer">×</button>
+      </div>
+      <form id="quick-edit-form" class="space-y-4 mt-4">
+        <input type="hidden" id="qe-prod-id" />
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Giá bán thực tế (VNĐ) *</label>
+          <input type="number" id="qe-price-input" required min="0" step="1000" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm font-bold text-cyan-300 focus:outline-none focus:border-cyan-400" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Giá gốc niêm yết (VNĐ)</label>
+          <input type="number" id="qe-orig-price-input" min="0" step="1000" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-200 focus:outline-none focus:border-cyan-400" />
+        </div>
+        <div class="grid grid-cols-2 gap-4 items-center">
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 uppercase mb-1">Số lượng tồn kho *</label>
+            <input type="number" id="qe-stock-input" required min="0" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-sm font-bold text-white focus:outline-none focus:border-cyan-400" />
+          </div>
+          <div class="pt-5">
+            <label class="flex items-center gap-2 cursor-pointer text-sm text-amber-300 font-semibold">
+              <input type="checkbox" id="qe-flash-checkbox" class="w-4 h-4 accent-amber-500 rounded" />
+              <span>⚡ Bật Flash Sale</span>
+            </label>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+          <button type="button" onclick="closeQuickEditModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold cursor-pointer">Hủy</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-bold text-xs shadow-md cursor-pointer">Lưu Cập Nhật</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       MODAL 3: CHI TIẾT SẢN PHẨM ĐƠN HÀNG (ORDER ITEMS)
+       ====================================================================== -->
+  <div id="order-detail-modal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 hidden bg-black/70 backdrop-blur-sm">
+    <div class="glass-panel w-full max-w-2xl rounded-2xl p-6 shadow-2xl border border-slate-700 relative max-h-[85vh] flex flex-col bg-[#0f172a]">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div>
+          <h3 class="font-bold text-lg text-slate-100 flex items-center gap-2">
+            <span>Chi tiết đơn hàng</span>
+            <span id="dash-modal-order-code" class="text-cyan-400 font-mono text-sm">#--</span>
+          </h3>
+          <p id="dash-modal-order-meta" class="text-xs text-slate-400 mt-0.5">Khách hàng: --</p>
+        </div>
+        <button onclick="closeOrderDetailModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center font-bold text-lg">×</button>
+      </div>
+
+      <div id="dash-modal-items-list" class="flex-1 overflow-y-auto py-4 space-y-3">
+        <!-- Rendered via JS -->
+      </div>
+
+      <div class="pt-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/60 -mx-6 -mb-6 p-4 rounded-b-2xl">
+        <div>
+          <span class="text-xs text-slate-400">Tổng thanh toán:</span>
+          <div id="dash-modal-order-total" class="text-lg font-black text-cyan-300">0 ₫</div>
+        </div>
+        <button
+          onclick="closeOrderDetailModal()"
+          class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition"
+        >
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- JavaScript Scripts (Tương thích cả chạy độc lập lẫn FastAPI Server) -->
+  <script src="/js/data.js?v=4.0" onerror="this.onerror=null; this.src='../js/data.js'"></script>
+  <script src="/static/js/api.js?v=4.0" onerror="this.onerror=null; this.src='app/static/js/api.js'"></script>
+  <script src="/static/js/dashboard.js?v=4.0" onerror="this.onerror=null; this.src='app/static/js/dashboard.js'"></script>
+</body>
+</html>
